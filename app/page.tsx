@@ -2,20 +2,24 @@
 
 import './page.css';
 import Navigation from '../components/Navagation/Navigation';
-import { useSDK, MetaMaskProvider } from '@metamask/sdk-react';
+import { MetaMaskProvider } from '@metamask/sdk-react';
 
 const page = () => {
-  const { sdk, connected, connecting, account } = useSDK();
+  const host = typeof window !== 'undefined' ? window.location.href : 'defaultHost'; // Чтобы window передавался в dApp метадату только на стороне клиента
 
-  const connect: () => Promise<void> = async () => {
-    try {
-      await sdk?.connect();
-    } catch (error) {
-      console.log('Failed to find account ' + error);
-    }
-  };
-
-  return <Navigation connect={connect} connected={connected} />;
+  return (
+    <MetaMaskProvider
+      debug={false}
+      sdkOptions={{
+        dappMetadata: {
+          name: 'MetaMask Wallet',
+          url: host,
+        },
+      }}
+    >
+      <Navigation />
+    </MetaMaskProvider>
+  );
 };
 
 export default page;
