@@ -3,7 +3,7 @@ import { useSDK } from '@metamask/sdk-react';
 import { useEffect, useState } from 'react';
 
 const Navigation = ({}) => {
-  const { sdk, connected, chainId, account } = useSDK();
+  const { sdk, connected, chainId } = useSDK();
   const [chainName, setChainName] = useState('');
 
   const connect: () => Promise<void> = async () => {

@@ -1,7 +1,8 @@
 'use client';
 
 import './page.css';
-import Navigation from '../components/Navagation/Navigation';
+import Navigation from '../components/Navigation';
+import Wallet from '../components/Wallet';
 import { MetaMaskProvider } from '@metamask/sdk-react';
 
 const page = () => {
@@ -18,6 +19,7 @@ const page = () => {
       }}
     >
       <Navigation />
+      <Wallet />
     </MetaMaskProvider>
   );
 };
