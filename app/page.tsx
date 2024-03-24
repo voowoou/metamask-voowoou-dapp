@@ -3,6 +3,7 @@
 import './page.css';
 import Navigation from '../components/Navigation';
 import Wallet from '../components/Wallet';
+import Transaction from '../components/Transaction';
 import { MetaMaskProvider } from '@metamask/sdk-react';
 
 const page = () => {
@@ -19,7 +20,10 @@ const page = () => {
       }}
     >
       <Navigation />
-      <Wallet />
+      <main>
+        <Wallet />
+        <Transaction />
+      </main>
     </MetaMaskProvider>
   );
 };
