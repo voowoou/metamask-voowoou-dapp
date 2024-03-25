@@ -33,7 +33,7 @@ const disconnectedState: WalletState = {
 
 const MetaMaskContext = createContext<MetaMaskContextData>({} as MetaMaskContextData);
 
-const MetaMaskContextProvider = () => {
+export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
   const [hasProvider, setHasProvider] = useState<boolean | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -92,4 +92,81 @@ const MetaMaskContextProvider = () => {
 
     setWallet({ accounts, balance, chainName });
   }, []);
+
+  /* 
+    Блок кода внутри useEffect() проверяет наличие MetaMask (т.к. тот добавляет свой провайдер).
+    При налиичии провайдера могут запуститься updateWallet или updateWalletAndAccounts (хэндлеры).
+    В конце хука возвращается функция очистки, удаляющая хэндлеров, при размонтировании провайдера
+    MetaMaskProvider.
+  */
+  // Функция срабатывает при изменении сети пользователем или при первом рендеринге информации о кошельке.
+  const updateWalletAndAccounts = useCallback(() => _updateWallet(), [_updateWallet]);
+
+  //Функция срабатывает, когда пользователь меняет счёт без перехода в другую сеть.
+  const updateWallet = useCallback((accounts: any) => _updateWallet(accounts), [_updateWallet]);
+
+  useEffect(() => {
+    const getProvider = async () => {
+      const provider = await detectEthereumProvider({ silent: true });
+      setHasProvider(Boolean(provider));
+
+      if (provider) {
+        updateWalletAndAccounts();
+        window.ethereum?.on('accountsChanged', updateWallet);
+        window.ethereum?.on('chainChanged', updateWalletAndAccounts);
+      }
+
+      getProvider();
+
+      return () => {
+        window.ethereum?.removeListener('accountsChanged', updateWallet);
+        window.ethereum?.removeListener('chainChanged', updateWalletAndAccounts);
+      };
+    };
+  }, [updateWallet, updateWalletAndAccounts]);
+
+  /*
+    Подключение к MetaMask для доступа к информации о счетах пользователя.
+  */
+  const connectMetaMask = async () => {
+    setIsConnecting(true);
+
+    try {
+      const accounts = await window.ethereum?.request({
+        method: 'eth_requestAccounts',
+      });
+      clearError();
+      updateWallet(accounts);
+    } catch (error: any) {
+      setErrorMessage(error.message);
+    }
+    setIsConnecting(false);
+  };
+
+  return (
+    <MetaMaskContext.Provider
+      value={{
+        wallet,
+        hasProvider,
+        error: !!errorMessage,
+        errorMessage,
+        isConnecting,
+        connectMetaMask,
+        clearError,
+      }}
+    >
+      {children}
+    </MetaMaskContext.Provider>
+  );
+};
+
+/*
+  Пишем сам хук, используя useContext() для стейт-менеджмента.
+*/
+export const useMetaMask = () => {
+  const context = useContext(MetaMaskContext);
+  if (context === undefined) {
+    throw new Error('useMetaMask must be used within a MetaMaskContextProvider');
+  }
+  return context;
 };
