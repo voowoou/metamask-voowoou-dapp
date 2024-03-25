@@ -20,8 +20,9 @@ interface MetaMaskContextData {
   hasProvider: boolean | null;
   error: boolean;
   errorMessage: string;
-  isConnecting: boolean;
+  isConnected: boolean;
   connectMetaMask: () => void;
+  disconnectMetaMask: () => void;
   clearError: () => void;
 }
 
@@ -35,12 +36,15 @@ const MetaMaskContext = createContext<MetaMaskContextData>({} as MetaMaskContext
 
 export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
   const [hasProvider, setHasProvider] = useState<boolean | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState('');
   const clearError = () => setErrorMessage('');
 
   const [wallet, setWallet] = useState(disconnectedState);
+
+  const [balance, setBalance] = useState('0.00');
+  const [chainName, setChainName] = useState('');
 
   const _updateWallet = useCallback(async (providedAccounts?: any) => {
     const accounts =
@@ -56,7 +60,6 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
       Получаем баланс счёта.
       Если запрос возвращает ожидаемую строку, то форматируем строку в обычное число.
     */
-    const [balance, setBalance] = useState('0.00');
     const rawBalance = await window.ethereum?.request({
       method: 'eth_getBalance',
       params: [accounts[0], 'latest'],
@@ -70,7 +73,6 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
       Если запрос возвращает ожидаемую строку, то с помощью getChainName
       возвращаем название сети, соответствующее ее chainId.
     */
-    const [chainName, setChainName] = useState('');
     const getChainName = (chainId: string): string => {
       // switch...case для определения названия
       switch (chainId) {
@@ -129,7 +131,7 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     Подключение к MetaMask для доступа к информации о счетах пользователя.
   */
   const connectMetaMask = async () => {
-    setIsConnecting(true);
+    setIsConnected(true);
 
     try {
       const accounts = await window.ethereum?.request({
@@ -140,7 +142,15 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     } catch (error: any) {
       setErrorMessage(error.message);
     }
-    setIsConnecting(false);
+    setIsConnected(false);
+  };
+
+  const disconnectMetaMask = () => {
+    setWallet(disconnectedState);
+
+    setIsConnected(false);
+    setHasProvider(null);
+    clearError();
   };
 
   return (
@@ -150,8 +160,9 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
         hasProvider,
         error: !!errorMessage,
         errorMessage,
-        isConnecting,
+        isConnected,
         connectMetaMask,
+        disconnectMetaMask,
         clearError,
       }}
     >

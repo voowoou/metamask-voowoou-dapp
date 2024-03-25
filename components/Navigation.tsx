@@ -1,63 +1,39 @@
-import Button from '@mui/material/Button';
-import { useSDK } from '@metamask/sdk-react';
-import { useEffect, useState } from 'react';
+'use client';
+
+import { Button, Link } from '@mui/material';
+import { useMetaMask } from '../hooks/useMetaMask';
 
 const Navigation = ({}) => {
-  const { sdk, connected, chainId } = useSDK();
-  const [chainName, setChainName] = useState('');
-
-  const connect: () => Promise<void> = async () => {
-    try {
-      await sdk?.connect();
-    } catch (error) {
-      console.log('Failed to find account ' + error);
-    }
-  };
-
-  const disconnect = () => {
-    if (sdk) {
-      sdk.terminate();
-    }
-  };
-
-  const getChainName = (chainId: string): void => {
-    switch (chainId) {
-      case '0x1':
-        setChainName('ETH main');
-        break;
-      case '0x38':
-        setChainName('BNB');
-        break;
-      default:
-        setChainName('Cannot recognize chain ID');
-        break;
-    }
-  };
-
-  useEffect(() => {
-    if (chainId) {
-      getChainName(chainId);
-    }
-  }, [chainId]);
+  const { wallet, hasProvider, isConnected, connectMetaMask, disconnectMetaMask } = useMetaMask();
 
   return (
-    <nav>
-      <h2>Chain</h2>
-      {connected ? (
+    <div>
+      <div>
+        <div>Vite + React & MetaMask</div>
         <div>
-          <div>
-            <span>{chainName}</span>
-          </div>
-          <Button variant="contained" onClick={disconnect}>
-            Disconnect MetaMask
-          </Button>
+          {!hasProvider && (
+            <a href="https://metamask.io" target="_blank">
+              Install MetaMask
+            </a>
+          )}
+          {window.ethereum?.isMetaMask && wallet.accounts.length < 1 && (
+            <button disabled={isConnected} onClick={connectMetaMask}>
+              Connect MetaMask
+            </button>
+          )}
+          {hasProvider && wallet.accounts.length > 0 && (
+            <a
+              className="text_link tooltip-bottom"
+              href={`https://etherscan.io/address/${wallet.accounts[0]}`}
+              target="_blank"
+              data-tooltip="Open in Block Explorer"
+            >
+              {wallet.accounts}
+            </a>
+          )}
         </div>
-      ) : (
-        <Button variant="contained" onClick={connect}>
-          Connect MetaMask
-        </Button>
-      )}
-    </nav>
+      </div>
+    </div>
   );
 };
 
