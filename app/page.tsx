@@ -7,13 +7,11 @@ import Transaction from '../components/Transaction';
 import { MetaMaskContextProvider } from '../hooks/useMetaMask';
 
 const page = () => {
-  const host = typeof window !== 'undefined' ? window.location.href : 'defaultHost'; // Чтобы window передавался в dApp метадату только на стороне клиента
-
   return (
     <MetaMaskContextProvider>
       <Navigation />
       <main>
-        {/* <Wallet /> */}
+        <Wallet />
         {/* <Transaction /> */}
       </main>
     </MetaMaskContextProvider>

@@ -1,5 +1,3 @@
-'use client';
-
 import { Button, Link } from '@mui/material';
 import { useMetaMask } from '../hooks/useMetaMask';
 

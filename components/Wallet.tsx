@@ -1,19 +1,15 @@
-'use client';
-
 import { Button, Snackbar } from '@mui/material';
 import { useState } from 'react';
-import {}
-
+import { useMetaMask } from '../hooks/useMetaMask';
 
 const Wallet = () => {
-  const { connected, account, chainId, balance } = useSDK();
-  const [chainName, setChainName] = useState('');
+  const { wallet } = useMetaMask();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(formatAddress(account)).then(() => {
-      setSnackbarOpen(true);
-    });
+    //navigator.clipboard.writeText(wallet.accounts).then(() => {
+    //setSnackbarOpen(true);
+    //});
   };
 
   const handleSnackbarClose = () => {
@@ -21,33 +17,35 @@ const Wallet = () => {
   };
 
   return (
-    connected && (
-      <section>
-        <h2>Wallet</h2>
-        <div>
-          <h3>Balance</h3>
+    <>
+      {wallet.accounts.length > 0 && (
+        <section>
+          <h2>Wallet</h2>
           <div>
-            <span>{formatBalance(balance)}</span>
-            <span>{chainName}</span>
+            <h3>Balance</h3>
+            <div>
+              <span>{wallet.balance}</span>
+              <span>{wallet.chainName}</span>
+            </div>
           </div>
-        </div>
-        <div>
-          <h3>Adress</h3>
           <div>
-            <span>{formatAddress(account)}</span>
-            <Button variant="contained" onClick={handleCopyAddress}>
-              COPY
-            </Button>
+            <h3>Adress</h3>
+            <div>
+              <span>{wallet.accounts[0]}</span>
+              <Button variant="contained" onClick={handleCopyAddress}>
+                COPY
+              </Button>
+            </div>
           </div>
-        </div>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          message="Address copied to clipboard"
-          onClose={handleSnackbarClose}
-        />
-      </section>
-    )
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            message="Address copied to clipboard"
+            onClose={handleSnackbarClose}
+          />
+        </section>
+      )}
+    </>
   );
 };
 
