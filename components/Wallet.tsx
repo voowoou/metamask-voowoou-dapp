@@ -7,9 +7,9 @@ const Wallet = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleCopyAddress = () => {
-    //navigator.clipboard.writeText(wallet.accounts).then(() => {
-    //setSnackbarOpen(true);
-    //});
+    navigator.clipboard.writeText(wallet.accounts[0]).then(() => {
+      setSnackbarOpen(true);
+    });
   };
 
   const handleSnackbarClose = () => {
