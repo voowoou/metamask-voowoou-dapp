@@ -4,7 +4,7 @@ import { Button, Link } from '@mui/material';
 import { useMetaMask } from '../hooks/useMetaMask';
 
 const Navigation = ({}) => {
-  const { wallet, hasProvider, isConnecting, connectMetaMask, disconnectMetaMask } = useMetaMask();
+  const { wallet, hasProvider, connectMetaMask } = useMetaMask();
   const isMetaMask = typeof window !== 'undefined' && window.ethereum?.isMetaMask; // Проверяем, установлено ли MetaMask Extension, избегая ошибки 'window is undefined'
 
   return (
