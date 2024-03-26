@@ -4,7 +4,7 @@ import { Button, Link } from '@mui/material';
 import { useMetaMask } from '../hooks/useMetaMask';
 
 const Navigation = ({}) => {
-  const { wallet, hasProvider, isConnected, connectMetaMask, disconnectMetaMask } = useMetaMask();
+  const { wallet, hasProvider, isConnecting, connectMetaMask, disconnectMetaMask } = useMetaMask();
 
   return (
     <div>
@@ -16,8 +16,8 @@ const Navigation = ({}) => {
               Install MetaMask
             </a>
           )}
-          {window.ethereum?.isMetaMask && wallet.accounts.length < 1 && (
-            <button disabled={isConnected} onClick={connectMetaMask}>
+          {!isConnecting && (
+            <button disabled={isConnecting} onClick={connectMetaMask}>
               Connect MetaMask
             </button>
           )}

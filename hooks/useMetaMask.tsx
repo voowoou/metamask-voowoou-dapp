@@ -1,3 +1,5 @@
+'use client';
+
 import {
   useState,
   useEffect,
@@ -20,7 +22,7 @@ interface MetaMaskContextData {
   hasProvider: boolean | null;
   error: boolean;
   errorMessage: string;
-  isConnected: boolean;
+  isConnecting: boolean;
   connectMetaMask: () => void;
   disconnectMetaMask: () => void;
   clearError: () => void;
@@ -36,7 +38,7 @@ const MetaMaskContext = createContext<MetaMaskContextData>({} as MetaMaskContext
 
 export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
   const [hasProvider, setHasProvider] = useState<boolean | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState('');
   const clearError = () => setErrorMessage('');
@@ -117,13 +119,13 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
         window.ethereum?.on('accountsChanged', updateWallet);
         window.ethereum?.on('chainChanged', updateWalletAndAccounts);
       }
+    };
 
-      getProvider();
+    getProvider();
 
-      return () => {
-        window.ethereum?.removeListener('accountsChanged', updateWallet);
-        window.ethereum?.removeListener('chainChanged', updateWalletAndAccounts);
-      };
+    return () => {
+      window.ethereum?.removeListener('accountsChanged', updateWallet);
+      window.ethereum?.removeListener('chainChanged', updateWalletAndAccounts);
     };
   }, [updateWallet, updateWalletAndAccounts]);
 
@@ -131,7 +133,7 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     Подключение к MetaMask для доступа к информации о счетах пользователя.
   */
   const connectMetaMask = async () => {
-    setIsConnected(true);
+    setIsConnecting(true);
 
     try {
       const accounts = await window.ethereum?.request({
@@ -142,13 +144,13 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     } catch (error: any) {
       setErrorMessage(error.message);
     }
-    setIsConnected(false);
+    setIsConnecting(false);
   };
 
   const disconnectMetaMask = () => {
     setWallet(disconnectedState);
 
-    setIsConnected(false);
+    setIsConnecting(false);
     setHasProvider(null);
     clearError();
   };
@@ -160,7 +162,7 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
         hasProvider,
         error: !!errorMessage,
         errorMessage,
-        isConnected,
+        isConnecting,
         connectMetaMask,
         disconnectMetaMask,
         clearError,
