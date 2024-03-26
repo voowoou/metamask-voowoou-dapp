@@ -1,9 +1,9 @@
 'use client';
 
-import { useSDK } from '@metamask/sdk-react';
 import { Button, Snackbar } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { formatBalance, formatAddress } from '../lib/utils';
+import { useState } from 'react';
+import {}
+
 
 const Wallet = () => {
   const { connected, account, chainId, balance } = useSDK();
@@ -19,26 +19,6 @@ const Wallet = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
-  const getChainName = (chainId: string): void => {
-    switch (chainId) {
-      case '0x1':
-        setChainName('ETH');
-        break;
-      case '0x38':
-        setChainName('BNB');
-        break;
-      default:
-        setChainName('');
-        break;
-    }
-  };
-
-  useEffect(() => {
-    if (chainId) {
-      getChainName(chainId);
-    }
-  }, [chainId]);
 
   return (
     connected && (
