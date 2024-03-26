@@ -9,7 +9,7 @@ import {
   useCallback,
 } from 'react';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { formatBalance } from '../lib/utils';
+import { formatBalance, formatChainName } from '../lib/utils';
 
 interface WalletState {
   accounts: any[];
@@ -45,10 +45,11 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
 
   const [wallet, setWallet] = useState(disconnectedState);
 
-  const [balance, setBalance] = useState('0.00');
-  const [chainName, setChainName] = useState('');
-
   const _updateWallet = useCallback(async (providedAccounts?: any) => {
+    /*
+      Получаем пользовательский счёт и разрешение на некоторые операции.
+      Если был передан счёт, то используем его. В ином случае нужно сделать запрос.
+    */
     const accounts =
       providedAccounts || (await window.ethereum?.request({ method: 'eth_accounts' }));
 
@@ -66,34 +67,21 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
       method: 'eth_getBalance',
       params: [accounts[0], 'latest'],
     });
-    if (typeof rawBalance === 'string') {
-      setBalance(formatBalance(rawBalance));
-    }
+
+    const balance = typeof rawBalance === 'string' ? formatBalance(rawBalance) : '0.00';
 
     /*
       Получаем название сети, в которой находится пользователь.
       Если запрос возвращает ожидаемую строку, то с помощью getChainName
       возвращаем название сети, соответствующее ее chainId.
     */
-    const getChainName = (chainId: string): string => {
-      // switch...case для определения названия
-      switch (chainId) {
-        case '0x1':
-          return 'ETH main';
-        case '0x38':
-          return 'BNB';
-        default:
-          return 'Cannot recognize chain ID';
-      }
-    };
     const chainId = await window.ethereum?.request({
-      // Асинхронный запрос для получения ID
       method: 'eth_chainId',
     });
-    if (typeof chainId === 'string') {
-      setChainName(getChainName(chainId));
-    }
 
+    const chainName = typeof chainId === 'string' ? formatChainName(chainId) : '';
+
+    // Устанавливаем полученные значения в стейт wallet
     setWallet({ accounts, balance, chainName });
   }, []);
 

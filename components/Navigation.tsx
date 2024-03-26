@@ -5,35 +5,25 @@ import { useMetaMask } from '../hooks/useMetaMask';
 
 const Navigation = ({}) => {
   const { wallet, hasProvider, isConnecting, connectMetaMask, disconnectMetaMask } = useMetaMask();
+  const isMetaMask = typeof window !== 'undefined' && window.ethereum?.isMetaMask; // Проверяем, установлено ли MetaMask Extension, избегая ошибки 'window is undefined'
 
   return (
-    <div>
-      <div>
-        <div>Vite + React & MetaMask</div>
-        <div>
-          {!hasProvider && (
-            <a href="https://metamask.io" target="_blank">
-              Install MetaMask
-            </a>
-          )}
-          {!isConnecting && (
-            <button disabled={isConnecting} onClick={connectMetaMask}>
-              Connect MetaMask
-            </button>
-          )}
-          {hasProvider && wallet.accounts.length > 0 && (
-            <a
-              className="text_link tooltip-bottom"
-              href={`https://etherscan.io/address/${wallet.accounts[0]}`}
-              target="_blank"
-              data-tooltip="Open in Block Explorer"
-            >
-              {wallet.accounts}
-            </a>
-          )}
-        </div>
-      </div>
-    </div>
+    <>
+      {!hasProvider ? (
+        <Link href="https://metamask.io" target="_blank">
+          Install MetaMask
+        </Link>
+      ) : isMetaMask && wallet.accounts.length < 1 ? (
+        <Button variant="contained" onClick={connectMetaMask}>
+          Connect MetaMask
+        </Button>
+      ) : (
+        <nav>
+          <h2>Chain</h2>
+          <span>{wallet.chainName}</span>
+        </nav>
+      )}
+    </>
   );
 };
 
