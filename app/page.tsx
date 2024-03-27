@@ -12,7 +12,7 @@ const page = () => {
       <Navigation />
       <main>
         <Wallet />
-        {/* <Transaction /> */}
+        <Transaction />
       </main>
     </MetaMaskContextProvider>
   );

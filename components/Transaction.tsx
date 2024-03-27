@@ -1,46 +1,87 @@
-import { Button } from '@mui/material';
+import { Button, Input } from '@mui/material';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useMetaMask } from '../hooks/useMetaMask';
 import { useState } from 'react';
 
-interface transactionParamsInterface {
+interface InputFields {
   to: string;
+  value: string;
+}
+
+interface transactionParams {
   from: string;
+  to: string;
   value: string;
 }
 
 const Transaction = () => {
   const { wallet } = useMetaMask();
-  const [toAddress, setToAddress] = useState<string>('');
-  const [value, setValue] = useState<number>(null);
+  const maxValue = parseInt(wallet.balance);
 
-  const handleToAddressChange = () => {};
-
-  const handleAmountChange = () => {};
-
-  const transactionParams: transactionParamsInterface = {
-    to: toAddress,
-    from: wallet.accounts[0],
-    value: value.toString(),
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      to: '',
+      value: '',
+    },
+  });
+  const onSubmit: SubmitHandler<InputFields> = data => {
+    const transactionParams: transactionParams = {
+      from: wallet.accounts[0],
+      to: data.to,
+      value: data.value,
+    };
   };
-
-  const sendTransaction;
 
   return (
     <section>
       <h2>Send</h2>
-      <div>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <h3>To</h3>
-          <input type="text" onChange={handleToAddressChange}></input>
+          <Controller
+            name="to"
+            control={control}
+            rules={{
+              required: "Recipient's adress is required",
+              pattern: {
+                value: /^0x[0-9,a-f,A-F]{40}$/,
+                message: 'Please use hexadecimal format',
+              },
+            }}
+            render={({ field }) => (
+              <>
+                <Input {...field} type="text" placeholder="Recipient's address" />
+                {errors.to && <span>{errors.to.message}</span>}
+              </>
+            )}
+          />
         </div>
         <div>
           <h3>Amount</h3>
-          <input type="number" onChange={handleAmountChange}></input>
+          <Controller
+            name="value"
+            control={control}
+            rules={{
+              required: 'Amount is required',
+              max: maxValue,
+              min: 0,
+            }}
+            render={({ field }) => (
+              <>
+                <Input {...field} type="number" placeholder="0.00" />
+                {errors.value && <span>{errors.value.message}</span>}
+              </>
+            )}
+          />
         </div>
-        <Button variant="contained" onClick={sendTransaction}>
+        <Button variant="contained" type="submit">
           SEND
         </Button>
-      </div>
+      </form>
     </section>
   );
 };
