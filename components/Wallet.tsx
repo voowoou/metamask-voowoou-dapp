@@ -4,7 +4,7 @@ import { useMetaMask } from '../hooks/useMetaMask';
 
 const Wallet = () => {
   const { wallet } = useMetaMask();
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(wallet.accounts[0]).then(() => {
@@ -39,7 +39,7 @@ const Wallet = () => {
           </div>
           <Snackbar
             open={snackbarOpen}
-            autoHideDuration={6000}
+            autoHideDuration={3000}
             message="Address copied to clipboard"
             onClose={handleSnackbarClose}
           />

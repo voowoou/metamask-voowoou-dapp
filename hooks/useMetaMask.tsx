@@ -23,6 +23,7 @@ interface MetaMaskContextData {
   isConnecting: boolean;
   connectMetaMask: () => void;
   clearError: () => void;
+  updateWalletAfterTransaction: () => void;
 }
 
 const disconnectedState: WalletState = {
@@ -131,6 +132,20 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     }
     setIsConnecting(false);
   };
+
+  /*
+    Функция запрашивает обновление баланса через 15 секунд после совершения транзакции.
+    На самом деле, можно добавить event listener'а из библиотеки ethers, который будет
+    "слушать" состояние транзакции.
+    Без этой логики баланс после транзакции не обновится, т.к. у последней какое-то время
+    имеется состояние pending.
+  */
+  const updateWalletAfterTransaction = useCallback(() => {
+    setTimeout(() => {
+      _updateWallet();
+    }, 20000);
+  }, [_updateWallet]);
+
   return (
     <MetaMaskContext.Provider
       value={{
@@ -141,6 +156,7 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
         isConnecting,
         connectMetaMask,
         clearError,
+        updateWalletAfterTransaction,
       }}
     >
       {children}

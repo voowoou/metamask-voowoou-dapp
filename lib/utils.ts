@@ -6,7 +6,7 @@ import { BigNumber } from 'bignumber.js'; // Потому что JS не оче�
 export const formatBalance = (rawBalance: string): string => {
   const balanceBN = new BigNumber(rawBalance); // Создаём объект BigNumber
   const balanceETH = balanceBN.dividedBy(new BigNumber('10').exponentiatedBy(18)); // Делим на вновь созданное BN, равное 10^18
-  const balance = balanceETH.toFixed(2); // Приводим к числу с двумя знаками после запятой
+  const balance = balanceETH.toFixed(5); // Приводим к числу с двумя знаками после запятой
 
   return balance;
 };
@@ -17,9 +17,13 @@ export const formatBalance = (rawBalance: string): string => {
 export const formatChainName = (chainId: string): string => {
   switch (chainId) {
     case '0x1':
-      return 'ETH main';
+      return 'ETH';
     case '0x38':
       return 'BNB';
+    case '0xaa36a7':
+      return 'Sepolia ETH';
+    case '0xa41':
+      return 'test WBT';
     default:
       return 'Cannot recognize chain ID';
   }

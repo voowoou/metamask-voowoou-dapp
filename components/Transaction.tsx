@@ -1,7 +1,7 @@
-import { Button, Input } from '@mui/material';
+import { Button, Input, Snackbar } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useMetaMask } from '../hooks/useMetaMask';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { numToHex } from '../lib/utils';
 
 interface InputFields {
@@ -18,10 +18,15 @@ interface transactionParams {
 }
 
 const Transaction = () => {
-  const { wallet } = useMetaMask();
+  const { wallet, updateWalletAfterTransaction } = useMetaMask();
   const maxValue = parseFloat(wallet.balance); // Ограничиваем максимальную сумму перевода балансом счёта
   const [isSent, setIsSent] = useState<boolean>(false); // Отправлен ли запрос
   const [error, setError] = useState<boolean>(false); // Возникла ли ошибка при отправке запроса
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   /*
     Подключение useForm() из пакета React Hook Form.
@@ -54,6 +59,7 @@ const Transaction = () => {
     } catch (err: any) {
       if (err) {
         setError(true);
+        console.log(err.message);
       }
     }
   };
@@ -68,6 +74,8 @@ const Transaction = () => {
       value: numToHex(parseFloat(data.value)),
     };
     connectMetaMask(transactionParams);
+    setSnackbarOpen(true);
+    updateWalletAfterTransaction();
   };
 
   return (
@@ -112,7 +120,7 @@ const Transaction = () => {
             }}
             render={({ field }) => (
               <>
-                <Input {...field} type="number" placeholder="0.00" />
+                <Input {...field} type="number" placeholder="0.00000" />
                 {errors.value && <span>{errors.value.message}</span>}
               </>
             )}
@@ -124,6 +132,13 @@ const Transaction = () => {
           </Button>
         )}
       </form>
+      <Snackbar
+        open={isSent}
+        autoHideDuration={6000}
+        message="Your transaction has been sent. Due to the specifics of transaction processing, 
+        we will update your balance in 15 seconds. If this did not happen, please refresh this page."
+        onClose={handleSnackbarClose}
+      />
     </section>
   );
 };
