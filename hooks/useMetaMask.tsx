@@ -22,7 +22,6 @@ interface MetaMaskContextData {
   errorMessage: string;
   isConnecting: boolean;
   connectMetaMask: () => void;
-  disconnectMetaMask: () => void;
   clearError: () => void;
 }
 
@@ -132,15 +131,6 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     }
     setIsConnecting(false);
   };
-
-  const disconnectMetaMask = () => {
-    setWallet(disconnectedState);
-
-    setIsConnecting(false);
-    setHasProvider(null);
-    clearError();
-  };
-
   return (
     <MetaMaskContext.Provider
       value={{
@@ -150,7 +140,6 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
         errorMessage,
         isConnecting,
         connectMetaMask,
-        disconnectMetaMask,
         clearError,
       }}
     >
