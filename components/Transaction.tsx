@@ -1,14 +1,17 @@
 import { Button, Input } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useMetaMask } from '../hooks/useMetaMask';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { numToHex } from '../lib/utils';
 
 interface InputFields {
+  // Типизируем то, что получит из инпута функция onSubmit (React Hook Form)
   to: string;
   value: string;
 }
 
 interface transactionParams {
+  // Типизируем параметры, отправляющиеся в теле запроса
   from: string;
   to: string;
   value: string;
@@ -16,24 +19,55 @@ interface transactionParams {
 
 const Transaction = () => {
   const { wallet } = useMetaMask();
-  const maxValue = parseInt(wallet.balance);
+  const maxValue = parseFloat(wallet.balance); // Ограничиваем максимальную сумму перевода балансом счёта
+  const [isSent, setIsSent] = useState<boolean>(false); // Отправлен ли запрос
+  const [error, setError] = useState<boolean>(false); // Возникла ли ошибка при отправке запроса
 
+  /*
+    Подключение useForm() из пакета React Hook Form.
+    RHF позволит проще и быстрее управлять элементами формы из MUI, добавлять ограничения и обрабатывать ошибки ввода.
+  */
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
   } = useForm({
+    mode: 'onChange',
     defaultValues: {
       to: '',
       value: '',
     },
   });
+
+  /*
+  connectMetaMask() принимает параметры запроса (отправителя, получателя, сумму перевода), обновляет стейты isSent и error.
+  */
+  const connectMetaMask = async (params: transactionParams) => {
+    try {
+      const hashResponse = await window.ethereum?.request({
+        method: 'eth_sendTransaction',
+        params: [params],
+      });
+      if (hashResponse) {
+        setIsSent(true);
+      }
+    } catch (err: any) {
+      if (err) {
+        setError(true);
+      }
+    }
+  };
+
+  /*
+  onSubmit() записывает данные из инпутов в переменную transactionParams, а также вызывает функцию на запрос транзакции.
+  */
   const onSubmit: SubmitHandler<InputFields> = data => {
     const transactionParams: transactionParams = {
       from: wallet.accounts[0],
       to: data.to,
-      value: data.value,
+      value: numToHex(parseFloat(data.value)),
     };
+    connectMetaMask(transactionParams);
   };
 
   return (
@@ -67,8 +101,14 @@ const Transaction = () => {
             control={control}
             rules={{
               required: 'Amount is required',
-              max: maxValue,
-              min: 0,
+              max: {
+                value: maxValue,
+                message: `Amount should not exceed ${maxValue}`,
+              },
+              min: {
+                value: 0,
+                message: 'Amount should be more than 0',
+              },
             }}
             render={({ field }) => (
               <>
@@ -78,9 +118,11 @@ const Transaction = () => {
             )}
           />
         </div>
-        <Button variant="contained" type="submit">
-          SEND
-        </Button>
+        {isValid && (
+          <Button variant="contained" type="submit">
+            SEND
+          </Button>
+        )}
       </form>
     </section>
   );
