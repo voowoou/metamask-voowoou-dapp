@@ -141,9 +141,7 @@ export const MetaMaskContextProvider = ({ children }: PropsWithChildren) => {
     имеется состояние pending.
   */
   const updateWalletAfterTransaction = useCallback(() => {
-    setTimeout(() => {
-      _updateWallet();
-    }, 20000);
+    _updateWallet();
   }, [_updateWallet]);
 
   return (

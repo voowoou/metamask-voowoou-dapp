@@ -47,7 +47,7 @@ const Transaction = () => {
   /*
   connectMetaMask() принимает параметры запроса (отправителя, получателя, сумму перевода), обновляет стейты isSent и error.
   */
-  const connectMetaMask = async (params: transactionParams) => {
+  const sendTransaction = async (params: transactionParams) => {
     try {
       const hashResponse = await window.ethereum?.request({
         method: 'eth_sendTransaction',
@@ -55,6 +55,9 @@ const Transaction = () => {
       });
       if (hashResponse) {
         setIsSent(true);
+        setTimeout(() => {
+          updateWalletAfterTransaction();
+        }, 15000);
       }
     } catch (err: any) {
       if (err) {
@@ -73,9 +76,8 @@ const Transaction = () => {
       to: data.to,
       value: numToHex(parseFloat(data.value)),
     };
-    connectMetaMask(transactionParams);
+    sendTransaction(transactionParams);
     setSnackbarOpen(true);
-    updateWalletAfterTransaction();
   };
 
   return (
