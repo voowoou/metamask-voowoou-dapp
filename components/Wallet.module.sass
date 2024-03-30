@@ -1,0 +1,51 @@
+$dark-grey: #333333
+$light-grey: #828282
+
+.section
+    width: 40vw
+
+.balance
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 1.5vw
+
+.balanceValue
+    font-size: 4vw
+
+.chainName
+    color: $light-grey
+    font-size: 2vw
+
+.address
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+.addressValue
+    overflow: hidden // скрыть лишний текст
+    white-space: nowrap // не переносить текст на новую строку
+    text-overflow: ellipsis // добавить многоточие в конце
+    width: 70% // или другая фиксированная ширина, подходящая под ваш дизайн
+    display: inline-block // или block, в зависимости от контекста
+
+.Button
+    font-family: Figtree, Arial, 'sans-serif'
+    background: $light-grey
+    width: 10vw
+    height: 4vw
+    font-size: 2vw
+    &:hover
+        background: $dark-grey
+
+@media (max-width: 768px)
+    .section
+        width: 100%
+    .balanceValue
+        font-size: 10vw
+    .chainName
+        font-size: 5vw
+    .Button
+        font-size: 5vw
+        width: 25vw
+        height: 10vw

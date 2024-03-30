@@ -1,10 +1,11 @@
 'use client';
 
-import './page.css';
 import Navigation from '../components/Navigation';
 import Wallet from '../components/Wallet';
 import Transaction from '../components/Transaction';
 import { MetaMaskContextProvider } from '../hooks/useMetaMask';
+import './reset.sass';
+import './styles.sass';
 
 const page = () => {
   return (

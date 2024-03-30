@@ -1,0 +1,40 @@
+$dark-grey: #333333
+$light-grey: #828282
+
+.section
+    width: 40vw
+
+.input
+    font-size: 2vw
+    border: 2px solid $light-grey
+    border-radius: 0.5vw
+    padding: 1.2vw 1vw
+    width: 100%
+    &:focus
+        border: 2px solid $dark-grey
+
+.Button
+    font-family: Figtree, Arial, 'sans-serif'
+    background: $light-grey
+    height: 4vw
+    font-size: 2vw
+    margin-top: 2vw
+    &:hover
+        background: $dark-grey
+
+.formError
+    font-size: 2vw
+    color: #b44848
+
+@media (max-width: 768px)
+    .section
+        margin-top: 4vw
+        width: 100%
+    .input
+        font-size: 5vw
+    .Button
+        font-size: 5vw
+        height: 10vw
+        margin-top: 4vw
+    .formError
+        font-size: 5vw

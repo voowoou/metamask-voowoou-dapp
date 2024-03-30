@@ -1,0 +1,32 @@
+$dark-grey: #333333
+$light-grey: #828282
+
+body
+  font-family: Figtree, Arial, 'sans-serif'
+  margin: 3vw 5vw
+  color: #333333
+  font-size: 3vw
+  h2
+    color: $dark-grey
+    margin-bottom: 2vw
+  h3
+    color: $light-grey
+    font-size: 2vw
+    margin: 1vw 0
+
+main
+  display: flex
+  justify-content: space-between
+
+@media (max-width: 768px)
+  body
+    margin: 5vw 5vw
+    font-size: 6vw
+    h2
+      color: $dark-grey
+      margin-bottom: 4vw
+    h3
+      font-size: 5vw
+      margin: 2vw 0
+  main
+    display: block

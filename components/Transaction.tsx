@@ -1,8 +1,9 @@
-import { Button, Input, Snackbar } from '@mui/material';
+import { Button, Snackbar } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useMetaMask } from '../hooks/useMetaMask';
 import { useState } from 'react';
 import { numToHex } from '../lib/utils';
+import styles from './Transaction.module.sass';
 
 interface InputFields {
   // Типизируем то, что получит из инпута функция onSubmit (React Hook Form)
@@ -20,8 +21,6 @@ interface transactionParams {
 const Transaction = () => {
   const { wallet, updateWalletAfterTransaction } = useMetaMask();
   const maxValue = parseFloat(wallet.balance); // Ограничиваем максимальную сумму перевода балансом счёта
-  const [isSent, setIsSent] = useState<boolean>(false); // Отправлен ли запрос
-  const [error, setError] = useState<boolean>(false); // Возникла ли ошибка при отправке запроса
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
 
   const handleSnackbarClose = () => {
@@ -54,14 +53,12 @@ const Transaction = () => {
         params: [params],
       });
       if (hashResponse) {
-        setIsSent(true);
         setTimeout(() => {
           updateWalletAfterTransaction();
         }, 15000);
       }
     } catch (err: any) {
       if (err) {
-        setError(true);
         console.log(err.message);
       }
     }
@@ -81,66 +78,85 @@ const Transaction = () => {
   };
 
   return (
-    <section>
-      <h2>Send</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <section className={styles.section}>
+      {wallet.accounts.length > 0 && (
         <div>
-          <h3>To</h3>
-          <Controller
-            name="to"
-            control={control}
-            rules={{
-              required: "Recipient's adress is required",
-              pattern: {
-                value: /^0x[0-9,a-f,A-F]{40}$/,
-                message: 'Please use hexadecimal format',
-              },
-            }}
-            render={({ field }) => (
-              <>
-                <Input {...field} type="text" placeholder="Recipient's address" />
-                {errors.to && <span>{errors.to.message}</span>}
-              </>
+          <h2>Send</h2>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              <h3>To</h3>
+              <Controller
+                name="to"
+                control={control}
+                rules={{
+                  required: "Recipient's adress is required",
+                  pattern: {
+                    value: /^0x[0-9,a-f,A-F]{40}$/,
+                    message: 'Please use hexadecimal format',
+                  },
+                }}
+                render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="Recipient's address"
+                      className={styles.input}
+                    />
+                    {errors.to && <span className={styles.formError}>{errors.to.message}</span>}
+                  </>
+                )}
+              />
+            </div>
+            <div>
+              <h3>Amount</h3>
+              <Controller
+                name="value"
+                control={control}
+                rules={{
+                  required: 'Amount is required',
+                  max: {
+                    value: maxValue,
+                    message: `Amount should not exceed ${maxValue}`,
+                  },
+                  min: {
+                    value: 0,
+                    message: 'Amount should be more than 0',
+                  },
+                }}
+                render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      type="number"
+                      min="0"
+                      max={maxValue}
+                      step={0.00001}
+                      placeholder="0.00000"
+                      className={styles.input}
+                    />
+                    {errors.value && (
+                      <span className={styles.formError}>{errors.value.message}</span>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+            {isValid && (
+              <Button className={styles.Button} fullWidth variant="contained" type="submit">
+                SEND
+              </Button>
             )}
+          </form>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            message="Your transaction has been sent. Due to the specifics of transaction processing, 
+            we will update your balance in 15 seconds. If this did not happen, please refresh this page."
+            onClose={handleSnackbarClose}
           />
         </div>
-        <div>
-          <h3>Amount</h3>
-          <Controller
-            name="value"
-            control={control}
-            rules={{
-              required: 'Amount is required',
-              max: {
-                value: maxValue,
-                message: `Amount should not exceed ${maxValue}`,
-              },
-              min: {
-                value: 0,
-                message: 'Amount should be more than 0',
-              },
-            }}
-            render={({ field }) => (
-              <>
-                <Input {...field} type="number" placeholder="0.00000" />
-                {errors.value && <span>{errors.value.message}</span>}
-              </>
-            )}
-          />
-        </div>
-        {isValid && (
-          <Button variant="contained" type="submit">
-            SEND
-          </Button>
-        )}
-      </form>
-      <Snackbar
-        open={isSent}
-        autoHideDuration={6000}
-        message="Your transaction has been sent. Due to the specifics of transaction processing, 
-        we will update your balance in 15 seconds. If this did not happen, please refresh this page."
-        onClose={handleSnackbarClose}
-      />
+      )}
     </section>
   );
 };

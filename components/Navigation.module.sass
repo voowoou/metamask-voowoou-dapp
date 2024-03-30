@@ -1,0 +1,52 @@
+$dark-grey: #333333
+$light-grey: #828282
+$fonts: Figtree, Arial, 'sans-serif'
+@keyframes gradient-text
+    0%
+        background-position: 0% 50%
+    100%
+        background-position: 100% 50%
+
+.nav
+    font-weight: regular
+    margin-bottom: 2vw
+    display: flex
+    justify-content: center
+    align-items: center
+
+.chain
+    width: 100%
+    display: flex
+    justify-content: space-between
+
+.chainName
+    background: linear-gradient(45deg, #30476B, #40628A, #5072A7, #6081C0, #7090DA, #A0AEC0, #5072A7, #40628A, #30476B)
+    background-size: 500% 500%
+    -webkit-background-clip: text
+    background-clip: text
+    color: transparent
+    animation: gradien-text 20s ease infinite
+    font-weight: bold
+
+.Link
+    font-family: $fonts
+    font-size: 3vw
+    &:hover
+        text-decoration: underline
+
+.Button
+    font-family: $fonts
+    background: $light-grey
+    width: 10vw
+    height: 4vw
+    font-size: 2vw
+    &:hover
+        background: $dark-grey
+
+@media (max-width: 768px)
+    .Link
+        font-family: $fonts
+        font-size: 5vw
+    .Button
+        font-size: 5vw
+        height: 10vw
