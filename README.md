@@ -1,6 +1,8 @@
 # Stakewolle Test Assignment
 
-#### Приложение-кошелёк (dApp), использующее интеграцию с MetaMask Browser Extension
+### Приложение-кошелёк (dApp), использующее интеграцию с MetaMask Browser Extension
+
+**Протестировать приложение можно по [этой ссылке](https://voowoou.github.io/stakewolle-test-assignment/)**
 
 ## Функции приложения
 
