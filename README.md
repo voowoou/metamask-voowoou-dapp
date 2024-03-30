@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Stakewolle Test Assignment
 
-## Getting Started
+#### Приложение-кошелёк (dApp), использующее интеграцию с MetaMask Browser Extension
 
-First, run the development server:
+## Функции приложения
+
+**Основные функции** приложения, реализованные согласно техническому заданию:
+
+- использование расширения MetaMask для браузера для подключения к счетам пользователя;
+- получение данных о балансе с учётом выбранных в MetaMask счёта и блокчейн-сети (_BNB Chain_, _Ethereum_, _Sepolia_, _Whitechain Testnet_) ;
+- возможность перевода средств по введённому адресу счёта.
+
+**Дополнительно** был создан кошелёк со средствами в тестовых сетях Sepolia и Whitechain Testnet для проверки совершения транзакций.
+
+## Технологии
+
+- **React** и **Next.js** в основе приложения;
+- **TypeScript** для статической типизации;
+- **`useContext()`** для передачи состояния приложения в компоненты;
+- **MUI** для быстрого создания компонентов пользовательского интерфейса;
+- **Sass** (модули) для быстрой кастомизации всего интерфейса;
+- **React Hook Form** для удобной работы с формой транзакции;
+- **bignumber.js** для форматирования больших чисел.
+
+## Недочёты, ограничения, особенности
+
+После завершения работы над настоящим dApp можно отметить несколько особенностей, которые желательно учесть или исправить в приложениях для работы с крипто-транзакциями:
+
+### 1. Стейт-менджмент
+
+Для более сложных и многостраничных приложений целесообразнее использовать более продвинутые технологии управления состоянием (RTK, MobX). Настоящее приложения использует глобальное состояние с использованием `useContext()`, что удобно для небольших приложений.
+
+### 2. Кастомизация MUI
+
+MUI предлагает обширные возможности для кастомизации стилей, однако в этом проекте было решено использовать отдельные Sass-файлы для стилевого оформления компонентов. Это облегчает визуальное восприятие кода, разделяя логику и стилистику.
+
+### 3. Поддерживаемые сети
+
+Приложение работает с ограниченным количеством сетей, определённых в `formatChainName()` в **/lib/utils.ts**. Для более универсального dApp необходимо расширить этот список, обеспечив поддержку различных сетей, поддерживаемых MetaMask.
+
+## Установка и использование приложения
+
+Клонируйте репозиторий:
+
+```bash
+git clone https://github.com/voowoou/stakewolle-test-assignment
+```
+
+Установите зависимости:
+
+```bash
+npm install
+```
+
+Запустите проект:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## В альтернативу `npm` можете использовать свой любимый менеджер пакетов.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Помните, что данное приложение не предзначено для транзакций в main сетях с реальными средствами!**
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+---
