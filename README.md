@@ -1,4 +1,4 @@
-# Stakewolle Test Assignment
+# MetaMask dApp
 
 ### Приложение-кошелёк (dApp), использующее интеграцию с MetaMask Browser Extension
 
